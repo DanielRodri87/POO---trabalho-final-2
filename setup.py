@@ -1,6 +1,15 @@
+import os
 import abc
 from typing import List, Dict, Optional
 
+# Funções utilitárias
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def pause():
+    input("\nPressione Enter para continuar...")
+
+# Classes de Autenticáveis e Pessoas
 class Autenticavel(abc.ABC):
     @abc.abstractmethod
     def obter_permissoes(self):
@@ -11,6 +20,7 @@ class Pessoa:
         self.nome = nome
         self.cpf = cpf
 
+# Classes de Usuários
 class Barbeiro(Pessoa, Autenticavel):
     def __init__(self, nome, cpf, salario):
         super().__init__(nome, cpf)
@@ -54,6 +64,7 @@ class Visitante(Pessoa):
     def __init__(self, nome, cpf):
         super().__init__(nome, cpf)
 
+# Classe da Barbearia
 class Barbearia:
     def __init__(self, barbeiro):
         self.barbeiro = barbeiro
@@ -89,6 +100,7 @@ class Barbearia:
     def excluir_cliente(self, cpf):
         self.clientes = [cliente for cliente in self.clientes if cliente.cpf != cpf]
 
+# Classes de Cálculo de Salário
 class CalcularSalarioBarbeiro:
     def __init__(self, barbeiro, clientes):
         self.barbeiro = barbeiro
@@ -101,6 +113,7 @@ class CalcularSalarioBarbeiro:
     def verificar_lucro(self):
         return self.calcular_lucro() > self.barbeiro.salario
 
+# Classes de Login e Cadastro
 class Login:
     def __init__(self, usuarios):
         self.usuarios = usuarios
@@ -130,214 +143,375 @@ class Cadastrar:
         visitante = Visitante(nome, cpf)
         self.usuarios[cpf] = visitante
 
+    def existe_barbeiro_cadastrado(self):
+        return any(isinstance(usuario, Barbeiro) for usuario in self.usuarios.values())
+
+# Funções de menu
 def adicionar_horarios_barbeiro(barbeiro):
     dias_semana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
     for dia in dias_semana:
         while True:
-            entrada = int(input(f"{dia} - Horário de entrada (0-23h): "))
-            saida = int(input(f"{dia} - Horário de saída (0-23h): "))
-            if 0 <= entrada <= 23 and 0 <= saida <= 23 and entrada <= saida:
-                break
-            else:
-                print("Horário inválido. Por favor, insira um horário entre 0 e 23 e certifique-se de que a hora de entrada seja anterior ou igual à hora de saída.")
+            try:
+                entrada = int(input(f"{dia} - Horário de entrada (0-23h): "))
+                saida = int(input(f"{dia} - Horário de saída (0-23h): "))
+                if 0 <= entrada <= 23 and 0 <= saida <= 23 and entrada <= saida:
+                    break
+                else:
+                    print("Horário inválido. Por favor, insira um horário entre 0 e 23 e certifique-se de que a hora de entrada seja anterior ou igual à hora de saída.")
+            except ValueError:
+                print("Entrada inválida. Por favor, insira um número.")
         for hora in range(entrada, saida + 1):
             barbeiro.adicionar_horario_livre(dia, f"{hora}h")
 
 def menu_corte():
-    print("Escolha o tipo de corte:")
+    clear_screen()
+    print("\nEscolha o tipo de corte:")
     print("1 - Americano: 15 reais")
     print("2 - Mullet: 15 reais")
     print("3 - Low Fade: 18 reais")
     print("4 - Social: 12 reais")
-    opcao = int(input("Escolha uma opção: "))
-    cortes = {
-        1: ("Americano", 15),
-        2: ("Mullet", 15),
-        3: ("Low Fade", 18),
-        4: ("Social", 12)
-    }
-    return cortes.get(opcao, ("Opção inválida", 0))
+    try:
+        opcao = int(input("Escolha uma opção: "))
+        cortes = {
+            1: ("Americano", 15),
+            2: ("Mullet", 15),
+            3: ("Low Fade", 18),
+            4: ("Social", 12)
+        }
+        return cortes.get(opcao, ("Opção inválida", 0))
+    except ValueError:
+        return ("Opção inválida", 0)
 
 def menu_dia():
-    print("Escolha o dia:")
+    clear_screen()
+    print("\nEscolha o dia:")
     print("1 - Segunda")
     print("2 - Terça")
     print("3 - Quarta")
     print("4 - Quinta")
     print("5 - Sexta")
     print("6 - Sábado")
-    opcao = int(input("Escolha uma opção: "))
-    dias = {
-        1: "Segunda",
-        2: "Terça",
-        3: "Quarta",
-        4: "Quinta",
-        5: "Sexta",
-        6: "Sábado"
-    }
-    return dias.get(opcao, "Opção inválida")
+    try:
+        opcao = int(input("Escolha uma opção: "))
+        dias = {
+            1: "Segunda",
+            2: "Terça",
+            3: "Quarta",
+            4: "Quinta",
+            5: "Sexta",
+            6: "Sábado"
+        }
+        return dias.get(opcao, "Opção inválida")
+    except ValueError:
+        return "Opção inválida"
 
 def menu_horario(horarios):
-    print("Escolha o horário:")
+    clear_screen()
+    print("\nEscolha o horário:")
     for idx, horario in enumerate(horarios, 1):
         print(f"{idx} - {horario}")
-    opcao = int(input("Escolha uma opção: "))
-    if 1 <= opcao <= len(horarios):
-        return horarios[opcao - 1]
-    return "Opção inválida"
+    try:
+        opcao = int(input("Escolha uma opção: "))
+        if 1 <= opcao <= len(horarios):
+            return horarios[opcao - 1]
+        return "Opção inválida"
+    except ValueError:
+        return "Opção inválida"
 
+# Inicialização do sistema
 cadastrar = Cadastrar()
 login = Login(cadastrar.usuarios)
 barbearia = None
 
 while True:
-    print("1 - Cadastrar barbeiro")
-    print("2 - Cadastrar cliente")
-    print("3 - Cadastrar visitante")
-    print("4 - Fazer login")
-    print("5 - Sair")
-    opcao = int(input("Escolha uma opção: "))
+    clear_screen()
+    print("\n===== MENU PRINCIPAL =====\n")
+    print("1 - Cadastrar Barbeiro")
+    print("2 - Cadastrar Cliente")
+    print("3 - Fazer Login")
+    print("4 - Sair")
+    opcao = input("\nEscolha uma opção: ")
 
-    if opcao == 1:
+    if opcao == '1':
+        clear_screen()
+        print("\n===== CADASTRAR BARBEIRO =====\n")
         nome = input("Nome: ")
         cpf = input("CPF: ")
-        salario = float(input("Salário: "))
-        cadastrar.cadastrar_barbeiro(nome, cpf, salario)
-        barbeiro = cadastrar.usuarios[cpf]
-        adicionar_horarios_barbeiro(barbeiro)
-        barbearia = Barbearia(barbeiro)
-        
-    elif opcao == 2:
-        nome = input("Nome: ")
-        cpf = input("CPF: ")
-        cadastrar.cadastrar_cliente(nome, cpf, "", 0, "", "")
-        
-    elif opcao == 3:
-        nome = input("Nome: ")
-        cpf = input("CPF: ")
-        cadastrar.cadastrar_visitante(nome, cpf)
-        
-    elif opcao == 4:
-        cpf = input("CPF: ")
-        usuario_autenticado = login.autenticar(cpf)
-        if not usuario_autenticado:
-            print("Usuário não encontrado.")
+        try:
+            salario = float(input("Salário: "))
+        except ValueError:
+            print("Entrada inválida para salário. Por favor, insira um número.")
+            pause()
             continue
+        cadastrar.cadastrar_barbeiro(nome, cpf, salario)
+        barbeiro = cadastrar.usuarios[cpf]  # Captura a referência do barbeiro
+        barbearia = Barbearia(barbeiro)
+        adicionar_horarios_barbeiro(barbeiro)
+        print(f"Barbeiro {nome} cadastrado com sucesso!")
+        pause()
 
-        if isinstance(usuario_autenticado, Barbeiro):
+    elif opcao == '2':
+        clear_screen()
+        print("\n===== CADASTRAR CLIENTE =====\n")
+        if not cadastrar.existe_barbeiro_cadastrado():
+            print("Por favor, cadastre um barbeiro antes de cadastrar um cliente.")
+            pause()
+            continue
+        nome = input("Nome: ")
+        cpf = input("CPF: ")
+        corte_desejado, valor = menu_corte()
+        if valor == 0:
+            print("Opção inválida de corte.")
+            pause()
+            continue
+        dia = menu_dia()
+        if dia == "Opção inválida":
+            print("Opção inválida de dia.")
+            pause()
+            continue
+        horarios_disponiveis = barbearia.listar_horarios_disponiveis(dia)
+        if not horarios_disponiveis:
+            print("Não há horários disponíveis para o dia escolhido.")
+            pause()
+            continue
+        horario_desejado = menu_horario(horarios_disponiveis)
+        if horario_desejado == "Opção inválida":
+            print("Opção inválida de horário.")
+            pause()
+            continue
+        try:
+            cadastrar.cadastrar_cliente(nome, cpf, corte_desejado, valor, dia, horario_desejado)
+            cliente = cadastrar.usuarios[cpf]
+            if barbearia.reservar_horario(cliente):
+                print(f"Cliente {nome} cadastrado e horário reservado com sucesso!")
+            else:
+                print(f"Falha ao reservar o horário para o cliente {nome}.")
+            pause()
+        except ValueError as e:
+            print(e)
+            pause()
+
+    elif opcao == '3':
+        clear_screen()
+        print("\n===== LOGIN =====\n")
+        cpf = input("CPF: ")
+        usuario = login.autenticar(cpf)
+        if not usuario:
+            print("CPF não encontrado.")
+            pause()
+            continue
+        permissoes = usuario.obter_permissoes()
+        if isinstance(usuario, Barbeiro):
             while True:
-                print("1 - Listar horários disponíveis")
-                print("2 - Reservar horário")
-                print("3 - Listar clientes")
-                print("4 - Editar cliente")
-                print("5 - Excluir cliente")
-                print("6 - Calcular lucro")
+                clear_screen()
+                print(f"\nBem-vindo, Barbeiro {usuario.nome}!\n")
+                print("1 - Listar Horários Disponíveis")
+                print("2 - Reservar Horário")
+                print("3 - Listar Clientes")
+                print("4 - Editar Cliente")
+                print("5 - Excluir Cliente")
+                print("6 - Calcular Lucro")
                 print("7 - Sair")
-                opcao_usuario = int(input("Escolha uma opção: "))
+                opcao_barbeiro = input("\nEscolha uma opção: ")
 
-                if opcao_usuario == 1:
-                    dia = menu_dia()
-                    if dia != "Opção inválida":
-                        horarios = barbearia.listar_horarios_disponiveis(dia)
-                        print(f"Horários disponíveis para {dia}: {horarios}")
-
-                elif opcao_usuario == 2:
-                    nome_cliente = input("Nome do cliente: ")
-                    cpf_cliente = input("CPF do cliente: ")
+                if opcao_barbeiro == '1' and "listar_horarios" in permissoes:
                     dia = menu_dia()
                     if dia == "Opção inválida":
-                        print("Opção de dia inválida.")
+                        print("Opção inválida de dia.")
+                        pause()
                         continue
-                    horarios = barbearia.listar_horarios_disponiveis(dia)
-                    horario_desejado = menu_horario(horarios)
-                    if horario_desejado == "Opção inválida":
-                        print("Opção de horário inválida.")
-                        continue
-                    corte_desejado, valor = menu_corte()
-                    if corte_desejado == "Opção inválida":
-                        print("Opção de corte inválida.")
-                        continue
-                    cliente = Cliente(nome_cliente, cpf_cliente, corte_desejado, valor, dia, horario_desejado)
-                    sucesso = barbearia.reservar_horario(cliente)
-                    if sucesso:
-                        print("Horário reservado com sucesso!")
+                    horarios_disponiveis = barbearia.listar_horarios_disponiveis(dia)
+                    if horarios_disponiveis:
+                        print(f"Horários disponíveis para {dia}: {', '.join(horarios_disponiveis)}")
                     else:
-                        print("Falha ao reservar horário. Verifique disponibilidade.")
+                        print("Não há horários disponíveis para o dia escolhido.")
+                    pause()
 
-                elif opcao_usuario == 3:
+                elif opcao_barbeiro == '2' and "reservar_horario" in permissoes:
+                    print("Esta funcionalidade está disponível apenas para clientes.")
+                    pause()
+
+                elif opcao_barbeiro == '3' and "listar_clientes" in permissoes:
                     clientes = barbearia.listar_clientes()
-                    for cliente in clientes:
-                        print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}, Corte: {cliente.corte_desejado}, Valor: {cliente.valor}, Dia: {cliente.dia}, Horário: {cliente.horario_desejado}")
-
-                elif opcao_usuario == 4:
-                    cpf_cliente = input("CPF do cliente: ")
-                    nome = input("Novo nome (deixe vazio para não alterar): ")
-                    corte_desejado = input("Novo corte desejado (deixe vazio para não alterar): ")
-                    valor = input("Novo valor (deixe vazio para não alterar): ")
-                    dia = input("Novo dia (deixe vazio para não alterar): ")
-                    horario_desejado = input("Novo horário desejado (deixe vazio para não alterar): ")
-                    barbearia.editar_cliente(cpf_cliente, nome=nome, corte_desejado=corte_desejado, valor=float(valor) if valor else None, dia=dia, horario_desejado=horario_desejado)
-
-                elif opcao_usuario == 5:
-                    cpf_cliente = input("CPF do cliente: ")
-                    barbearia.excluir_cliente(cpf_cliente)
-                    print("Cliente excluído com sucesso!")
-
-                elif opcao_usuario == 6:
-                    calculadora = CalcularSalarioBarbeiro(barbearia.barbeiro, barbearia.clientes)
-                    lucro = calculadora.calcular_lucro()
-                    lucro_maior = calculadora.verificar_lucro()
-                    print(f"Lucro total: R${lucro:.2f}")
-                    if lucro_maior:
-                        print("O barbeiro está gerando mais lucro do que o salário dele.")
+                    if clientes:
+                        for cliente in clientes:
+                            print(f"Nome: {cliente.nome}, CPF: {cliente.cpf}, Corte: {cliente.corte_desejado}, Dia: {cliente.dia}, Horário: {cliente.horario_desejado}, Valor: {cliente.valor}")
                     else:
-                        print("O barbeiro não está gerando mais lucro do que o salário dele.")
+                        print("Nenhum cliente cadastrado.")
+                    pause()
 
-                elif opcao_usuario == 7:
+                elif opcao_barbeiro == '4' and "editar_cliente" in permissoes:
+                    cpf_cliente = input("CPF do cliente a ser editado: ")
+                    clientes = [cliente for cliente in barbearia.clientes if cliente.cpf == cpf_cliente]
+
+                    if not clientes:
+                        print("Cliente não encontrado.")
+                        pause()
+                        continue
+
+                    if len(clientes) > 1:
+                        print("Cliente possui mais de um agendamento:")
+                        for idx, cliente in enumerate(clientes, 1):
+                            print(f"{idx} - Corte: {cliente.corte_desejado}, Dia: {cliente.dia}, Horário: {cliente.horario_desejado}")
+                        try:
+                            opcao_cliente = int(input("Escolha o número do agendamento a ser editado: "))
+                            if 1 <= opcao_cliente <= len(clientes):
+                                cliente_a_editar = clientes[opcao_cliente - 1]
+                            else:
+                                print("Opção inválida.")
+                                pause()
+                                continue
+                        except ValueError:
+                            print("Entrada inválida.")
+                            pause()
+                            continue
+                    else:
+                        cliente_a_editar = clientes[0]
+
+                    antigo_dia = cliente_a_editar.dia
+                    antigo_horario = cliente_a_editar.horario_desejado
+
+                    while True:
+                        clear_screen()
+                        print("===== EDITAR CLIENTE =====")
+                        print("1 - Nome")
+                        print("2 - Corte Desejado")
+                        print("3 - Dia e Horário")
+                        print("4 - Cancelar")
+                        opcao_edicao = input("Escolha o que deseja editar: ")
+
+                        if opcao_edicao == '1':
+                            novo_nome = input("Novo nome (deixe em branco para não alterar): ")
+                            cliente_a_editar.nome = novo_nome or cliente_a_editar.nome
+                            print("Nome atualizado com sucesso.")
+                            pause()
+                            break
+
+                        elif opcao_edicao == '2':
+                            novo_corte, novo_valor = menu_corte()
+                            if novo_valor == 0:
+                                print("Opção inválida de corte.")
+                                pause()
+                                continue
+                            cliente_a_editar.corte_desejado = novo_corte
+                            cliente_a_editar.valor = novo_valor
+                            print("Corte atualizado com sucesso.")
+                            pause()
+                            break
+
+                        elif opcao_edicao == '3':
+                            novo_dia = menu_dia()
+                            if novo_dia == "Opção inválida":
+                                print("Opção inválida de dia.")
+                                pause()
+                                continue
+                            barbearia.barbeiro.adicionar_horario_livre(antigo_dia, antigo_horario)  # Adiciona o antigo horário de volta
+                            horarios_disponiveis = barbearia.listar_horarios_disponiveis(novo_dia)
+                            if not horarios_disponiveis:
+                                print("Não há horários disponíveis para o dia escolhido.")
+                                barbearia.barbeiro.remover_horario_livre(antigo_dia, antigo_horario)  # Remove o horário antigo novamente
+                                pause()
+                                continue
+                            novo_horario = menu_horario(horarios_disponiveis)
+                            if novo_horario == "Opção inválida":
+                                print("Opção inválida de horário.")
+                                barbearia.barbeiro.remover_horario_livre(antigo_dia, antigo_horario)  # Remove o horário antigo novamente
+                                pause()
+                                continue
+                            cliente_a_editar.dia = novo_dia
+                            cliente_a_editar.horario_desejado = novo_horario
+                            barbearia.barbeiro.remover_horario_livre(novo_dia, novo_horario)  # Remove o novo horário dos disponíveis
+                            print("Dia e horário atualizados com sucesso.")
+                            pause()
+                            break
+
+                        elif opcao_edicao == '4':
+                            print("Edição cancelada.")
+                            pause()
+                            break
+
+                        else:
+                            print("Opção inválida.")
+                            pause()
+                
+                elif opcao_barbeiro == '5' and "excluir_cliente" in permissoes:
+                    cpf_cliente = input("CPF do cliente a ser excluído: ")
+                    try:
+                        barbearia.excluir_cliente(cpf_cliente)
+                        print("Cliente excluído com sucesso.")
+                    except ValueError as e:
+                        print(e)
+                    pause()
+                    
+                elif opcao_barbeiro == '6':
+                    lucro = CalcularSalarioBarbeiro(barbearia.barbeiro, barbearia.clientes)
+                    print(f"Lucro total: {lucro.calcular_lucro()} reais")
+                    if lucro.verificar_lucro():
+                        print("Parabéns! Você atingiu o salário desejado.")
+                    else:
+                        print("Você ainda não atingiu o salário desejado.")
+                    pause()
+                    
+                elif opcao_barbeiro == '7':
                     break
 
-        elif isinstance(usuario_autenticado, Cliente):
+
+
+        elif isinstance(usuario, Cliente):
             while True:
-                print("1 - Listar horários disponíveis")
-                print("2 - Reservar horário")
+                clear_screen()
+                print(f"\nBem-vindo, Cliente {usuario.nome}!\n")
+                print("1 - Listar Horários Disponíveis")
+                print("2 - Reservar Horário")
                 print("3 - Sair")
-                opcao_usuario = int(input("Escolha uma opção: "))
+                opcao_cliente = input("\nEscolha uma opção: ")
 
-                if opcao_usuario == 1:
-                    dia = menu_dia()
-                    if dia != "Opção inválida":
-                        horarios = barbearia.listar_horarios_disponiveis(dia)
-                        print(f"Horários disponíveis para {dia}: {horarios}")
-
-                elif opcao_usuario == 2:
-                    nome_cliente = input("Nome do cliente: ")
-                    cpf_cliente = input("CPF do cliente: ")
+                if opcao_cliente == '1' and "listar_horarios" in permissoes:
                     dia = menu_dia()
                     if dia == "Opção inválida":
-                        print("Opção de dia inválida.")
+                        print("Opção inválida de dia.")
+                        pause()
                         continue
-                    horarios = barbearia.listar_horarios_disponiveis(dia)
-                    horario_desejado = menu_horario(horarios)
-                    if horario_desejado == "Opção inválida":
-                        print("Opção de horário inválida.")
-                        continue
-                    corte_desejado, valor = menu_corte()
-                    if corte_desejado == "Opção inválida":
-                        print("Opção de corte inválida.")
-                        continue
-                    cliente = Cliente(nome_cliente, cpf_cliente, corte_desejado, valor, dia, horario_desejado)
-                    sucesso = barbearia.reservar_horario(cliente)
-                    if sucesso:
-                        print("Horário reservado com sucesso!")
+                    horarios_disponiveis = barbearia.listar_horarios_disponiveis(dia)
+                    if horarios_disponiveis:
+                        print(f"Horários disponíveis para {dia}: {', '.join(horarios_disponiveis)}")
                     else:
-                        print("Falha ao reservar horário. Verifique disponibilidade.")
+                        print("Não há horários disponíveis para o dia escolhido.")
+                    pause()
 
-                elif opcao_usuario == 3:
+                elif opcao_cliente == '2' and "reservar_horario" in permissoes:
+                    dia = menu_dia()
+                    if dia == "Opção inválida":
+                        print("Opção inválida de dia.")
+                        pause()
+                        continue
+                    horarios_disponiveis = barbearia.listar_horarios_disponiveis(dia)
+                    if not horarios_disponiveis:
+                        print("Não há horários disponíveis para o dia escolhido.")
+                        pause()
+                        continue
+                    horario_desejado = menu_horario(horarios_disponiveis)
+                    if horario_desejado == "Opção inválida":
+                        print("Opção inválida de horário.")
+                        pause()
+                        continue
+                    cliente = Cliente(usuario.nome, usuario.cpf, usuario.corte_desejado, usuario.valor, dia, horario_desejado)
+                    if barbearia.reservar_horario(cliente):
+                        print("Horário reservado com sucesso.")
+                    else:
+                        print("Falha ao reservar o horário.")
+                    pause()
+
+                elif opcao_cliente == '3':
                     break
 
-        elif isinstance(usuario_autenticado, Visitante):
-            print("Visitantes não possuem permissões específicas.")
-            break
+                else:
+                    print("Opção inválida.")
+                    pause()
 
-    elif opcao == 5:
+    elif opcao == '4':
         break
+
+    else:
+        print("Opção inválida.")
+        pause()
