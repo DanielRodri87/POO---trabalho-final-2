@@ -219,6 +219,10 @@ def menu_horario(horarios):
         return "Opção inválida"
 
 # Inicialização do sistema
+Autenticavel.register(Barbeiro)
+Autenticavel.register(Cliente)
+
+
 cadastrar = Cadastrar()
 login = Login(cadastrar.usuarios)
 barbearia = None
