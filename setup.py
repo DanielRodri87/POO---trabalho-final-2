@@ -222,119 +222,139 @@ class Cadastrar:
     def existe_barbeiro_cadastrado(self):
         return any(isinstance(usuario, Barbeiro) for usuario in self._usuarios.values())
 
+
+
 # Funções de menu
-def adicionar_horarios_barbeiro(barbeiro):
-    dias_semana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
-    for dia in dias_semana:
-        while True:
-            try:
-                entrada = int(input(f"{dia} - Horário de entrada (0-23h): "))
-                saida = int(input(f"{dia} - Horário de saída (0-23h): "))
-                if 0 <= entrada <= 23 and 0 <= saida <= 23 and entrada <= saida:
-                    break
-                else:
-                    print("Horário inválido. Por favor, insira um horário entre 0 e 23 e certifique-se de que a hora de entrada seja anterior ou igual à hora de saída.")
-            except ValueError:
-                print("Entrada inválida. Por favor, insira um número.")
-        for hora in range(entrada, saida + 1):
-            barbeiro.adicionar_horario_livre(dia, f"{hora}h")
+class Menu:
+    @staticmethod
+    def adicionar_horarios_barbeiro(barbeiro):
+        dias_semana = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
+        for dia in dias_semana:
+            while True:
+                try:
+                    entrada = int(input(f"{dia} - Horário de entrada (0-23h): "))
+                    saida = int(input(f"{dia} - Horário de saída (0-23h): "))
+                    if 0 <= entrada <= 23 and 0 <= saida <= 23 and entrada <= saida:
+                        break
+                    else:
+                        print("Horário inválido. Por favor, insira um horário entre 0 e 23 e certifique-se de que a hora de entrada seja anterior ou igual à hora de saída.")
+                except ValueError:
+                    print("Entrada inválida. Por favor, insira um número.")
+            for hora in range(entrada, saida + 1):
+                barbeiro.adicionar_horario_livre(dia, f"{hora}h")
 
-def menu_corte():
-    clear_screen()
-    print("\nEscolha o tipo de corte:")
-    print("1 - Americano: 15 reais")
-    print("2 - Mullet: 15 reais")
-    print("3 - Low Fade: 18 reais")
-    print("4 - Social: 12 reais")
-    try:
-        opcao = int(input("Escolha uma opção: "))
-        cortes = {
-            1: ("Americano", 15),
-            2: ("Mullet", 15),
-            3: ("Low Fade", 18),
-            4: ("Social", 12)
-        }
-        return cortes.get(opcao, ("Opção inválida", 0))
-    except ValueError:
-        return ("Opção inválida", 0)
+    @staticmethod
+    def menu_corte():
+        clear_screen()
+        print("\nEscolha o tipo de corte:")
+        print("1 - Americano: 15 reais")
+        print("2 - Mullet: 15 reais")
+        print("3 - Low Fade: 18 reais")
+        print("4 - Social: 12 reais")
+        try:
+            opcao = int(input("Escolha uma opção: "))
+            cortes = {
+                1: ("Americano", 15),
+                2: ("Mullet", 15),
+                3: ("Low Fade", 18),
+                4: ("Social", 12)
+            }
+            return cortes.get(opcao, ("Opção inválida", 0))
+        except ValueError:
+            return ("Opção inválida", 0)
 
-def menu_dia():
-    clear_screen()
-    print("\nEscolha o dia:")
-    print("1 - Segunda")
-    print("2 - Terça")
-    print("3 - Quarta")
-    print("4 - Quinta")
-    print("5 - Sexta")
-    print("6 - Sábado")
-    try:
-        opcao = int(input("Escolha uma opção: "))
-        dias = {
-            1: "Segunda",
-            2: "Terça",
-            3: "Quarta",
-            4: "Quinta",
-            5: "Sexta",
-            6: "Sábado"
-        }
-        return dias.get(opcao, "Opção inválida")
-    except ValueError:
-        return "Opção inválida"
+    @staticmethod
+    def menu_dia():
+        clear_screen()
+        print("\nEscolha o dia:")
+        print("1 - Segunda")
+        print("2 - Terça")
+        print("3 - Quarta")
+        print("4 - Quinta")
+        print("5 - Sexta")
+        print("6 - Sábado")
+        try:
+            opcao = int(input("Escolha uma opção: "))
+            dias = {
+                1: "Segunda",
+                2: "Terça",
+                3: "Quarta",
+                4: "Quinta",
+                5: "Sexta",
+                6: "Sábado"
+            }
+            return dias.get(opcao, "Opção inválida")
+        except ValueError:
+            return "Opção inválida"
 
-def menu_hora(dia, barbeiro):
-    clear_screen()
-    horarios = barbeiro.horarios_livres.get(dia, [])
-    print(f"\nHorários disponíveis para {dia}: {', '.join(horarios)}")
-    horario = input("Escolha um horário: ")
-    if horario in horarios:
-        return horario
-    return "Horário inválido"
+    @staticmethod
+    def menu_hora(dia, barbeiro):
+        clear_screen()
+        horarios = barbeiro.horarios_livres.get(dia, [])
+        print(f"\nHorários disponíveis para {dia}: {', '.join(horarios)}")
+        horario = input("Escolha um horário: ")
+        if horario in horarios:
+            return horario
+        return "Horário inválido"
 
-def menu_principal():
-    clear_screen()
-    print("===== Sistema de Agendamento de Barbearia =====")
-    print("1 - Login")
-    print("2 - Cadastrar")
-    print("0 - Sair")
-    try:
-        return int(input("Escolha uma opção: "))
-    except ValueError:
-        return -1
+    @staticmethod
+    def menu_principal():
+        clear_screen()
+        print("===== Sistema de Agendamento de Barbearia =====")
+        print("1 - Login")
+        print("2 - Cadastrar")
+        print("0 - Sair")
+        try:
+            return int(input("Escolha uma opção: "))
+        except ValueError:
+            return -1
 
-def menu_login():
-    clear_screen()
-    cpf = input("Digite seu CPF: ")
-    return cpf
+    @staticmethod
+    def menu_login():
+        clear_screen()
+        cpf = input("Digite seu CPF: ")
+        return cpf
 
-def menu_cadastrar():
-    clear_screen()
-    print("\nEscolha o tipo de usuário:")
-    print("1 - Barbeiro")
-    print("2 - Cliente")
-    print("3 - Visitante")
-    try:
-        return int(input("Escolha uma opção: "))
-    except ValueError:
-        return -1
-    
-def menu_horario(horarios):
-    clear_screen()
-    print("\nEscolha o horário:")
-    for idx, horario in enumerate(horarios, 1):
-        print(f"{idx} - {horario}")
-    try:
-        opcao = int(input("Escolha uma opção: "))
-        if 1 <= opcao <= len(horarios):
-            return horarios[opcao - 1]
-        return "Opção inválida"
-    except ValueError:
-        return "Opção inválida"
+    @staticmethod
+    def menu_cadastrar():
+        clear_screen()
+        print("\nEscolha o tipo de usuário:")
+        print("1 - Barbeiro")
+        print("2 - Cliente")
+        print("3 - Visitante")
+        try:
+            return int(input("Escolha uma opção: "))
+        except ValueError:
+            return -1
+
+    @staticmethod
+    def menu_horario(horarios):
+        clear_screen()
+        print("\nEscolha o horário:")
+        for idx, horario in enumerate(horarios, 1):
+            print(f"{idx} - {horario}")
+        try:
+            opcao = int(input("Escolha uma opção: "))
+            if 1 <= opcao <= len(horarios):
+                return horarios[opcao - 1]
+            return "Opção inválida"
+        except ValueError:
+            return "Opção inválida"
+
+# Funções de utilidade para limpar a tela e pausar
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def pause():
+    input("\nPressione Enter para continuar...")
+
+
 
 # Inicialização do sistema
 Autenticavel.register(Barbeiro)
 Autenticavel.register(Cliente)
 
-
+menu = Menu()
 cadastrar = Cadastrar()
 login = Login(cadastrar.usuarios)
 barbearia = None
@@ -362,7 +382,7 @@ while True:
         cadastrar.cadastrar_barbeiro(nome, cpf, salario)
         barbeiro = cadastrar.usuarios[cpf]  # Captura a referência do barbeiro
         barbearia = Barbearia(barbeiro)
-        adicionar_horarios_barbeiro(barbeiro)
+        menu.adicionar_horarios_barbeiro(barbeiro)
         print(f"Barbeiro {nome} cadastrado com sucesso!")
         pause()
 
@@ -375,12 +395,12 @@ while True:
             continue
         nome = input("Nome: ")
         cpf = input("CPF: ")
-        corte_desejado, valor = menu_corte()
+        corte_desejado, valor = menu.menu_corte()
         if valor == 0:
             print("Opção inválida de corte.")
             pause()
             continue
-        dia = menu_dia()
+        dia = menu.menu_dia()
         if dia == "Opção inválida":
             print("Opção inválida de dia.")
             pause()
@@ -390,7 +410,7 @@ while True:
             print("Não há horários disponíveis para o dia escolhido.")
             pause()
             continue
-        horario_desejado = menu_horario(horarios_disponiveis)
+        horario_desejado = menu.menu_horario(horarios_disponiveis)
         if horario_desejado == "Opção inválida":
             print("Opção inválida de horário.")
             pause()
@@ -432,7 +452,7 @@ while True:
                     opcao_barbeiro = input("\nEscolha uma opção: ")
 
                     if opcao_barbeiro == '1' and "listar_horarios" in permissoes:
-                        dia = menu_dia()
+                        dia = menu.menu_dia()
                         if dia == "Opção inválida":
                             print("Opção inválida de dia.")
                             pause()
@@ -505,7 +525,7 @@ while True:
                                 break
 
                             elif opcao_edicao == '2':
-                                novo_corte, novo_valor = menu_corte()
+                                novo_corte, novo_valor = menu.menu_corte()
                                 if novo_valor == 0:
                                     print("Opção inválida de corte.")
                                     pause()
@@ -517,7 +537,7 @@ while True:
                                 break
 
                             elif opcao_edicao == '3':
-                                novo_dia = menu_dia()
+                                novo_dia = menu.menu_dia()
                                 if novo_dia == "Opção inválida":
                                     print("Opção inválida de dia.")
                                     pause()
@@ -529,7 +549,7 @@ while True:
                                     barbearia.barbeiro.remover_horario_livre(antigo_dia, antigo_horario)  # Remove o horário antigo novamente
                                     pause()
                                     continue
-                                novo_horario = menu_horario(horarios_disponiveis)
+                                novo_horario = menu.menu_horario(horarios_disponiveis)
                                 if novo_horario == "Opção inválida":
                                     print("Opção inválida de horário.")
                                     barbearia.barbeiro.remover_horario_livre(antigo_dia, antigo_horario)  # Remove o horário antigo novamente
@@ -585,7 +605,7 @@ while True:
                     opcao_cliente = input("\nEscolha uma opção: ")
 
                     if opcao_cliente == '1' and "listar_horarios" in permissoes:
-                        dia = menu_dia()
+                        dia = menu.menu_dia()
                         if dia == "Opção inválida":
                             print("Opção inválida de dia.")
                             pause()
@@ -598,7 +618,7 @@ while True:
                         pause()
 
                     elif opcao_cliente == '2' and "reservar_horario" in permissoes:
-                        dia = menu_dia()
+                        dia = menu.menu_dia()
                         if dia == "Opção inválida":
                             print("Opção inválida de dia.")
                             pause()
@@ -608,7 +628,7 @@ while True:
                             print("Não há horários disponíveis para o dia escolhido.")
                             pause()
                             continue
-                        horario_desejado = menu_horario(horarios_disponiveis)
+                        horario_desejado = menu.menu_horario(horarios_disponiveis)
                         if horario_desejado == "Opção inválida":
                             print("Opção inválida de horário.")
                             pause()
