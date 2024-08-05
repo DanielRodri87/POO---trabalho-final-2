@@ -2,16 +2,13 @@ import os
 import abc
 from typing import List, Dict, Optional
 
-# Funções utilitárias
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def pause():
     input("\nPressione Enter para continuar...")
 
-# Classes de Autenticáveis e Pessoas
 class Autenticavel(abc.ABC):
-    @abc.abstractmethod
     def obter_permissoes(self):
         pass
 
@@ -32,8 +29,7 @@ class Pessoa:
     def cpf(self):
         return self._cpf
 
-# Classes de Usuários
-class Barbeiro(Pessoa, Autenticavel):
+class Barbeiro(Pessoa):
     def __init__(self, nome, cpf, salario):
         super().__init__(nome, cpf)
         self._horarios_livres = {
@@ -73,7 +69,7 @@ class Barbeiro(Pessoa, Autenticavel):
     def obter_permissoes(self):
         return ["listar_horarios", "reservar_horario", "listar_clientes", "editar_cliente", "excluir_cliente"]
 
-class Cliente(Pessoa, Autenticavel):
+class Cliente(Pessoa):
     def __init__(self, nome, cpf, corte_desejado, valor, dia, horario_desejado):
         super().__init__(nome, cpf)
         self._corte_desejado = corte_desejado
@@ -120,7 +116,6 @@ class Visitante(Pessoa):
     def __init__(self, nome, cpf):
         super().__init__(nome, cpf)
 
-# Classe da Barbearia
 class Barbearia:
     def __init__(self, barbeiro):
         self._barbeiro = barbeiro
@@ -172,7 +167,6 @@ class Barbearia:
                 return
         raise ValueError("Cliente não encontrado.")
 
-# Classes de Cálculo de Salário
 class CalcularSalarioBarbeiro:
     def __init__(self, barbeiro, clientes):
         self._barbeiro = barbeiro
@@ -222,9 +216,6 @@ class Cadastrar:
     def existe_barbeiro_cadastrado(self):
         return any(isinstance(usuario, Barbeiro) for usuario in self._usuarios.values())
 
-
-
-# Funções de menu
 class Menu:
     @staticmethod
     def adicionar_horarios_barbeiro(barbeiro):
@@ -246,11 +237,15 @@ class Menu:
     @staticmethod
     def menu_corte():
         clear_screen()
-        print("\nEscolha o tipo de corte:")
-        print("1 - Americano: 15 reais")
-        print("2 - Mullet: 15 reais")
-        print("3 - Low Fade: 18 reais")
-        print("4 - Social: 12 reais")
+        print("=" * 30)
+        print("   | ESCOLHA CORTE |")
+        print("=" * 30)
+        print("\nEscolha o tipo de corte:\n")
+        print("1 - Americano  | R$ 15,00")
+        print("2 - Mullet     | R$ 15,00")
+        print("3 - Low Fade   | R$ 18,00")
+        print("4 - Social     | R$ 12,00")
+        print("=" * 30)
         try:
             opcao = int(input("Escolha uma opção: "))
             cortes = {
@@ -266,13 +261,16 @@ class Menu:
     @staticmethod
     def menu_dia():
         clear_screen()
-        print("\nEscolha o dia:")
-        print("1 - Segunda")
-        print("2 - Terça")
-        print("3 - Quarta")
-        print("4 - Quinta")
-        print("5 - Sexta")
-        print("6 - Sábado")
+        print("=" * 30)
+        print("   📅 Escolha o Dia da Semana")
+        print("=" * 30)
+        print("\n1 - Segunda  | 🌞")
+        print("2 - Terça    | 🌞")
+        print("3 - Quarta   | 🌞")
+        print("4 - Quinta   | 🌞")
+        print("5 - Sexta    | 🌞")
+        print("6 - Sábado   | 🌟")
+        print("=" * 30)
         try:
             opcao = int(input("Escolha uma opção: "))
             dias = {
@@ -300,10 +298,13 @@ class Menu:
     @staticmethod
     def menu_principal():
         clear_screen()
-        print("===== Sistema de Agendamento de Barbearia =====")
-        print("1 - Login")
-        print("2 - Cadastrar")
-        print("0 - Sair")
+        print("=" * 30)
+        print("  💈 Sistema de Agendamento de Barbearia 💈")
+        print("=" * 30)
+        print("\n1️⃣  - Login")
+        print("2️⃣  - Cadastrar")
+        print("0️⃣  - Sair")
+        print("=" * 30)
         try:
             return int(input("Escolha uma opção: "))
         except ValueError:
@@ -317,11 +318,13 @@ class Menu:
 
     @staticmethod
     def menu_cadastrar():
-        clear_screen()
-        print("\nEscolha o tipo de usuário:")
-        print("1 - Barbeiro")
-        print("2 - Cliente")
-        print("3 - Visitante")
+        print("=" * 30)
+        print("   🙍‍♂️ Escolha o Tipo de Usuário 🙍‍♀️")
+        print("=" * 30)
+        print("\n1️⃣  - Barbeiro ✂️")
+        print("2️⃣  - Cliente 👤")
+        print("3️⃣  - Visitante 👀")
+        print("=" * 30)
         try:
             return int(input("Escolha uma opção: "))
         except ValueError:
@@ -341,7 +344,6 @@ class Menu:
         except ValueError:
             return "Opção inválida"
 
-# Funções de utilidade para limpar a tela e pausar
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
 
@@ -350,10 +352,11 @@ def pause():
 
 
 
-# Inicialização do sistema
 Autenticavel.register(Barbeiro)
 Autenticavel.register(Cliente)
 
+visitante = Visitante("impostor", "111")
+# login = Login({"111": visitante})
 menu = Menu()
 cadastrar = Cadastrar()
 login = Login(cadastrar.usuarios)
@@ -361,16 +364,25 @@ barbearia = None
 
 while True:
     clear_screen()
-    print("\n===== MENU PRINCIPAL =====\n")
-    print("1 - Cadastrar Barbeiro")
-    print("2 - Cadastrar Cliente")
-    print("3 - Fazer Login")
-    print("4 - Sair")
+    print("=" * 45)
+    print("          💈 MENU PRINCIPAL 💈          ")
+    print("=" * 45)
+    print("\n1️⃣  - Cadastrar Barbeiro ✂️")
+    print("2️⃣  - Cadastrar Cliente 👤")
+    print("3️⃣  - Fazer Login 🔑")
+    print("4️⃣  - Sair 🚪")
+    print("=" * 45)
     opcao = input("\nEscolha uma opção: ")
 
     if opcao == '1':
         clear_screen()
-        print("\n===== CADASTRAR BARBEIRO =====\n")
+        print("\n===== ✂️ CADASTRAR BARBEIRO ✂️ =====\n")
+        
+        if cadastrar.existe_barbeiro_cadastrado():
+            print("Já existe um barbeiro cadastrado.")
+            pause()
+            continue
+        
         nome = input("Nome: ")
         cpf = input("CPF: ")
         try:
@@ -388,7 +400,7 @@ while True:
 
     elif opcao == '2':
         clear_screen()
-        print("\n===== CADASTRAR CLIENTE =====\n")
+        print("\n===== 👤 CADASTRAR CLIENTE 👤 =====\n")
         if not cadastrar.existe_barbeiro_cadastrado():
             print("Por favor, cadastre um barbeiro antes de cadastrar um cliente.")
             pause()
@@ -429,26 +441,32 @@ while True:
 
     elif opcao == '3':
         clear_screen()
-        print("\n===== LOGIN =====\n")
+        print("\n===== 🔑 LOGIN 🔑 =====\n")
         cpf = input("CPF: ")
         usuario = login.autenticar(cpf)
         if not usuario:
             print("CPF não encontrado.")
             pause()
             continue
+        
+        if isinstance(usuario, Autenticavel) == False:
+            print("Usuário não tem permissão.")
+            pause()
+            continue
+        
         permissoes = usuario.obter_permissoes()
         if isinstance(usuario, Barbeiro):
             if isinstance(usuario, Autenticavel):
                 while True:
                     clear_screen()
-                    print(f"\nBem-vindo, Barbeiro {usuario.nome}!\n")
-                    print("1 - Listar Horários Disponíveis")
-                    print("2 - Reservar Horário")
-                    print("3 - Listar Clientes")
-                    print("4 - Editar Cliente")
-                    print("5 - Excluir Cliente")
-                    print("6 - Calcular Lucro")
-                    print("7 - Sair")
+                    print(f"\nBem-vindo, Barbeiro {usuario.nome}! ✂️\n")
+                    print("1️⃣  - Listar Horários Disponíveis")
+                    print("2️⃣  - Reservar Horário")
+                    print("3️⃣  - Listar Clientes")
+                    print("4️⃣  - Editar Cliente")
+                    print("5️⃣  - Excluir Cliente")
+                    print("6️⃣  - Calcular Lucro")
+                    print("7️⃣  - Sair")
                     opcao_barbeiro = input("\nEscolha uma opção: ")
 
                     if opcao_barbeiro == '1' and "listar_horarios" in permissoes:
@@ -510,11 +528,11 @@ while True:
 
                         while True:
                             clear_screen()
-                            print("===== EDITAR CLIENTE =====")
-                            print("1 - Nome")
-                            print("2 - Corte Desejado")
-                            print("3 - Dia e Horário")
-                            print("4 - Cancelar")
+                            print("===== ✂️ EDITAR CLIENTE ✂️ =====")
+                            print("1️⃣  - Nome")
+                            print("2️⃣  - Corte Desejado")
+                            print("3️⃣  - Dia e Horário")
+                            print("4️⃣  - Cancelar")
                             opcao_edicao = input("Escolha o que deseja editar: ")
 
                             if opcao_edicao == '1':
@@ -591,17 +609,18 @@ while True:
                         
                     elif opcao_barbeiro == '7':
                         break
-
+            else: 
+                print("Usuário não tem permissão.")
+                pause()
 
 
         elif isinstance(usuario, Cliente):
             if isinstance(usuario, Autenticavel):
                 while True:
                     clear_screen()
-                    print(f"\nBem-vindo, Cliente {usuario.nome}!\n")
-                    print("1 - Listar Horários Disponíveis")
-                    print("2 - Reservar Horário")
-                    print("3 - Sair")
+                    print("1️⃣  - Listar Horários Disponíveis")
+                    print("2️⃣  - Reservar Horário")
+                    print("3️⃣  - Sair")
                     opcao_cliente = input("\nEscolha uma opção: ")
 
                     if opcao_cliente == '1' and "listar_horarios" in permissoes:
@@ -646,8 +665,12 @@ while True:
                     else:
                         print("Opção inválida.")
                         pause()
+            else:
+                print("Usuário não tem permissão.")
 
     elif opcao == '4':
+        print("Saindo... Até a próxima! 👋")
+
         break
 
     else:
