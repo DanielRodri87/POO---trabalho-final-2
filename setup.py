@@ -1,6 +1,7 @@
 import os
 import abc
-from typing import List, Dict, Optional
+
+# Desenvolvido por Daniel Rodrigues de Sousa
 
 def clear_screen():
     os.system('cls' if os.name == 'nt' else 'clear')
