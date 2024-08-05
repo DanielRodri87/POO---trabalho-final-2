@@ -10,6 +10,7 @@ def pause():
     input("\nPressione Enter para continuar...")
 
 class Autenticavel(abc.ABC):
+    @abc.abstractmethod
     def obter_permissoes(self):
         pass
 
